@@ -1,15 +1,18 @@
-import React from 'react'
-import { AppContextProvider } from './context/AppContext';
-import {BrowserRouter} from 'react-router-dom';
+import React from 'react';
+import { Route, Routes } from 'react-router-dom';
+import Home from './pages/student/Home.jsx';
+import Footer from './pages/student/Footer.jsx';
 
-function App() {
+
+const App= () => {
   return (
-    <BrowserRouter>
-    <AppContextProvider>
-    <div>App</div>
-    </AppContextProvider>
-    </BrowserRouter>
+    <div>
+      <Routes>
+        <Route path="/" element={<Home/>} />
+        <Route path="/footer" element={<Footer/>} />
+      </Routes>
+    </div>
   )
 }
 
-export default App
+export default App;

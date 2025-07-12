@@ -8,7 +8,7 @@ export  const AppContextProvider = (props) => {
 
     return (
         <AppContext.Provider value={value}>
-        {/* Other components can be wrapped here */}
+        {props.children}
         </AppContext.Provider>
     );
 }
