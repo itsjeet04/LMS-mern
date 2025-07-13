@@ -32,14 +32,15 @@ function Navbar() {
           <button className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
             Become Educator
           </button>
-        </>
-        }
+          
         <Link
           to="/my-enrollments"
           className="text-gray-700 hover:text-blue-600 transition"
         >
           My Enrollments
         </Link>
+        </>
+        }
       </nav>
 
       {/* Auth */}
