@@ -5,7 +5,7 @@ import CoursesList from './pages/student/CoursesList.jsx';
 import CourseDetails from './pages/student/CourseDetails.jsx';
 import MyEnrollments from './pages/student/MyEnrollments.jsx';
 import Player from './pages/student/Player.jsx';
-import Loading from './pages/student/Loading.jsx';
+import Loading from './components/student/Loading.jsx';
 import Educator from './pages/educator/Educator.jsx';
 import AddCourse from './pages/educator/AddCourse.jsx';
 import Dashboard from './pages/educator/Dashboard.jsx';
