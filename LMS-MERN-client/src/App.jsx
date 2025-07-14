@@ -13,7 +13,6 @@ import MyCourse from './pages/educator/MyCourse.jsx';
 import StudentEnrolled from './pages/educator/StudentEnrolled.jsx';
 import Navbar from './components/student/Navbar.jsx';
 
-
 function App() {
 
   const isEducatorRoute = useMatch('/educator/*');
@@ -21,6 +20,7 @@ function App() {
     <div className='text-gray-800 bg-gray-50 min-h-screen'>
       { /*{ Navbar for student} */}
       {!isEducatorRoute && <Navbar/>}
+      
       <Routes>
         // student routes
         <Route path="/" element={<Home />} />
