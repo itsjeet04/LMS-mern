@@ -3,10 +3,10 @@ import { assets } from "../../assets/assets";
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
-function SearchBar() {
+function SearchBar({data}) {
 
   const navigate = useNavigate();
-  const [input, setInput] = useState('');
+  const [input, setInput] = useState(data ? data : "");
 
   const onSearchHandle = (e) => {
     e.preventDefault();

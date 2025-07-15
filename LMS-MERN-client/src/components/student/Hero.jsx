@@ -12,7 +12,6 @@ function Hero() {
       <p className="mt-4 text-gray-600 max-w-xl">
         Join thousands of learners and kickstart your journey towards a brighter, skill-rich future. Our platform offers flexible, high-quality education designed for everyone.
       </p>
-      
       <img 
         src={assets.sketch} 
         alt="sketch" 
