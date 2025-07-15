@@ -1,7 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import CourseCard from './CourseCard';
+import { AppContext } from '../../context/AppContext';
 
 function CoursesSection() {
+
+  const { allCourses } = React.useContext(AppContext);
+
   return (
     <section className="w-full bg-white py-16 px-4 text-center">
       <div className="max-w-3xl mx-auto space-y-6">
@@ -11,6 +16,13 @@ function CoursesSection() {
         <p className="text-gray-600 text-lg">
           Explore our wide range of courses designed to help you master new skills and advance your career. Whether you're looking to learn programming, design, business, or any other field, we have something for everyone.
         </p>
+        
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          { allCourses.slice(0, 4).map((course,index) => (
+            <CourseCard key={index} course={course} />
+          ))}
+        </div>
+
         <Link
           to="/course-list"
           onClick={() => window.scrollTo(0, 0)}
