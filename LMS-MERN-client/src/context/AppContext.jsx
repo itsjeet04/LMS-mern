@@ -9,11 +9,11 @@ export const AppContext = createContext();
 
 
 export  const AppContextProvider = (props) => {
-
+    // currency 
     const currency = import.meta.env.VITE_CURRENCY || '$';
 
+    // state to hold all courses
     const [allCourses, setAllCourses] = React.useState([]);
-    // fetch all courses
     const fetchAllCourses = async () => {
         setAllCourses(dummyCourses)
     }    
@@ -21,11 +21,25 @@ export  const AppContextProvider = (props) => {
         fetchAllCourses();
     }, []);
 
+    // useNavigate hook
     const navigate = useNavigate();
+
+    // function to calc course rating
+    const calcCourseRating = (course) => 
+        {
+            if (!course.courseRatings || course.courseRatings.length === 0) return 0;
+            let totalRating = 0;
+            course.courseRatings.forEach((rating) => {
+                totalRating += rating.rating;
+            }
+            );
+            return totalRating / course.courseRatings.length;
+    }
+
 
 
     const value = {
-        currency,allCourses,navigate
+        currency,allCourses,navigate,calcCourseRating
     }
 
     return (

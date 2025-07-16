@@ -4,7 +4,7 @@ import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 
 function CourseCard({ course }) {
-  const { currency } = React.useContext(AppContext);
+  const { currency, calcCourseRating } = React.useContext(AppContext);
   return (
     <Link
       to={`/course/${course._id}`}
@@ -24,18 +24,20 @@ function CourseCard({ course }) {
           {course.educator.name}
         </p>
         <div className="flex items-center justify-between mb-2">
-          <p className="text-sm text-yellow-600 font-medium">4.5</p>
+          <p className="text-sm text-yellow-600 font-medium">
+            {calcCourseRating(course)}
+          </p>
           <div className="flex space-x-0.5">
-            {[...Array(5)].map((_, index) => (
+            {[...Array(5)].map((_, i) => (
               <img
-                key={index}
-                src={assets.star}
+                key={i}
+                src={i < Math.floor(calcCourseRating(course)) ? assets.star : assets.star_blank}
                 alt="star"
                 className="w-4 h-4"
               />
             ))}
           </div>
-          <p className="text-sm text-gray-500">(22)</p>
+          <p className="text-sm text-gray-500">{course.courseRatings.length}</p>
         </div>
         <p className="text-base font-semibold text-blue-600">
           {currency}
