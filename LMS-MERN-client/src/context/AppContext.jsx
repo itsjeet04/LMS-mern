@@ -1,9 +1,12 @@
 import { createContext } from "react";
 import { dummyCourses } from "../assets/assets";
 import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export const AppContext = createContext();
+
+
 
 export  const AppContextProvider = (props) => {
 
@@ -14,14 +17,15 @@ export  const AppContextProvider = (props) => {
     const fetchAllCourses = async () => {
         setAllCourses(dummyCourses)
     }    
-
     useEffect(() => {
         fetchAllCourses();
     }, []);
 
+    const navigate = useNavigate();
+
 
     const value = {
-        currency,allCourses
+        currency,allCourses,navigate
     }
 
     return (

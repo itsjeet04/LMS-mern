@@ -1,7 +1,8 @@
-import React from "react";
+import React, { useContext } from "react";
 import { assets } from "../../assets/assets";
 import { Link, useLocation } from "react-router-dom";
 import { useClerk, UserButton, useUser } from "@clerk/clerk-react";
+import { AppContext } from "../../context/AppContext";
 
 
 
@@ -11,6 +12,9 @@ function Navbar() {
 
   const { openSignIn } = useClerk();
   const { user } = useUser();
+  const {navigate} = useContext(AppContext)
+
+
 
   return (
 
@@ -22,7 +26,9 @@ function Navbar() {
     >
       {/* Logo */}
       <div className="flex items-center gap-2">
-        <img src={assets.logo} alt="Logo" className="h-10 w-auto" />
+        
+        <img onClick={()=>navigate("/")} src={assets.logo} alt="Logo" className="h-10 w-auto" />
+        
         <span className="text-xl font-semibold text-gray-800">YourBrand</span>
       </div>
 
