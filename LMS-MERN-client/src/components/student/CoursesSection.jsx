@@ -18,7 +18,9 @@ function CoursesSection() {
         </p>
         
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+          {/* 3 - loop over the courses to render each one: */}
           { allCourses.slice(0, 4).map((course,index) => (
+            // 4 - pass the course data to CourseCard component
             <CourseCard key={index} course={course} />
           ))}
         </div>

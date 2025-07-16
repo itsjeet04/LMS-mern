@@ -4,7 +4,9 @@ import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 
 function CourseCard({ course }) {
+
   const { currency, calcCourseRating } = React.useContext(AppContext);
+  
   return (
     <Link
       to={`/course/${course._id}`}

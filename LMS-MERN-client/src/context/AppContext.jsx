@@ -12,11 +12,12 @@ export  const AppContextProvider = (props) => {
     // currency 
     const currency = import.meta.env.VITE_CURRENCY || '$';
 
-    // state to hold all courses
+    // 1- state to hold all courses
     const [allCourses, setAllCourses] = React.useState([]);
     const fetchAllCourses = async () => {
         setAllCourses(dummyCourses)
     }    
+    // 2- useEffect to fetch all courses when component mounts
     useEffect(() => {
         fetchAllCourses();
     }, []);
