@@ -13,7 +13,7 @@ export  const AppContextProvider = (props) => {
     const currency = import.meta.env.VITE_CURRENCY || '$';
 
     // 1- state to hold all courses
-    const [allCourses, setAllCourses] = React.useState([]);
+    // const [allCourses, setAllCourses] = React.useState([]);
     const fetchAllCourses = async () => {
         setAllCourses(dummyCourses)
     }    
@@ -24,6 +24,9 @@ export  const AppContextProvider = (props) => {
 
     // useNavigate hook
     const navigate = useNavigate();
+
+    const [allCourses , setAllCourses] = React.useState([]);
+    const [isEducator, setIsEducator] = React.useState(true);
 
     // function to calc course rating
     const calcCourseRating = (course) => 
