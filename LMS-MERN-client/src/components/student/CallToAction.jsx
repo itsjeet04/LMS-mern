@@ -3,7 +3,7 @@ import { assets } from '../../assets/assets';
 
 function CallToAction() {
   return (
-    <section className="bg-gradient-to-r from-blue-600 to-indigo-700 text-white py-12 px-6 md:px-16 rounded-2xl my-10 shadow-lg text-center">
+    <section className="bg-blue-500 text-white py-12 px-6 md:px-16 rounded-2xl my-10 shadow-lg text-center">
       <h1 className="text-3xl md:text-4xl font-bold mb-4">
         Join our community of learners and start your journey today!
       </h1>
