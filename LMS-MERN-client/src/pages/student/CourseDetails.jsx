@@ -19,18 +19,18 @@ function CourseDetails() {
 
 
   return (
-    <>
     <div>
+      <div>
       {/* left column */}
       <div>
 
       </div>
       {/* right column */}
       <div>
-        
+
       </div>
     </div>
-    </>
+    </div>
   )
 }
 
