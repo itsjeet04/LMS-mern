@@ -12,6 +12,7 @@ function CourseDetails() {
   useEffect(() => {
     // Finds the course from the context based on the URL parameter.
     const course = allCourses.find(c => c._id === id);
+    // If course is found, set it to state.
     setCourseData(course);
   }, [id, allCourses]); // Re-run effect if id or course list changes
 
@@ -66,7 +67,7 @@ function CourseDetails() {
 
           {/* --- Right Column: Purchase Card --- */}
           <div>
-            
+
           </div>
 
         </div>
