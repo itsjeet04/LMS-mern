@@ -61,7 +61,20 @@ function CourseDetails() {
               <p className="text-md text-gray-500">
                 ({ratingCount} {ratingCount === 1 ? 'rating' : 'ratings'})
               </p>
+              <p>
+                {courseData.enrolledStudents.length}  {courseData.enrolledStudents.length > 1 ? 'students enrolled' : 'student enrolled'}
+              </p>
             </div>
+            <p>
+              Course by : 
+             <span className='underline text-blue-600'>
+               Sirjanjeet singh
+             </span>
+            </p>
+
+            <h2 className='text-2xl font-semibold text-gray-800 mt-8'>
+              Course Structure
+            </h2>
 
           </div>
 

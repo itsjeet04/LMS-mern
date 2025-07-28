@@ -40,6 +40,8 @@ export  const AppContextProvider = (props) => {
     }
 
 
+    // calculalate course length time 
+    
 
     const value = {
         currency,allCourses,navigate,calcCourseRating,isEducator,setIsEducator
