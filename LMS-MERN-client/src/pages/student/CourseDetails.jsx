@@ -3,10 +3,11 @@ import { useParams } from 'react-router-dom';
 import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 import Loading from '../../components/student/Loading';
+import humanizeDuration from 'humanize-duration'
 
 function CourseDetails() {
   const { id } = useParams();
-  const { allCourses, calcCourseRating } = useContext(AppContext);
+  const { allCourses, calcCourseRating, calcNumberOfLectures, calcCourseTime, calcChapterTime } = useContext(AppContext);
   const [courseData, setCourseData] = useState(null);
 
   useEffect(() => {
@@ -32,13 +33,13 @@ function CourseDetails() {
       {/* Main Content Wrapper */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-          
+
           {/* --- Left Column: Course Information --- */}
           <div className="lg:col-span-2 space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 tracking-tight">
               {courseData.courseTitle}
             </h1>
-            
+
             {/* Using prose for clean typography on HTML content */}
             <div
               dangerouslySetInnerHTML={{ __html: courseData.courseDescription }}
@@ -66,15 +67,54 @@ function CourseDetails() {
               </p>
             </div>
             <p>
-              Course by : 
-             <span className='underline text-blue-600'>
-               Sirjanjeet singh
-             </span>
+              Course by :
+              <span className='underline text-blue-600'>
+                Sirjanjeet singh
+              </span>
             </p>
+{/* Course Structure */}
+<h2 className='text-2xl font-semibold text-gray-800 mt-10 mb-4'>
+  Course Structure
+</h2>
+<div className="space-y-6">
+  {courseData.courseContent.map((chapter, index) => (
+    <div key={index} className="bg-white rounded-xl shadow-md p-4 border border-gray-200">
+      <div className="flex items-center gap-3 mb-2">
+        <img src={assets.down_arrow_icon} alt="arrow" className="w-5 h-5" />
+        <p className="text-lg font-medium text-gray-800">{chapter.chapterTitle}</p>
+      </div>
+      <p className="text-sm text-gray-500 mb-3">
+        {chapter.chapterContent.length} lectures • {calcChapterTime(chapter)}
+      </p>
+      <ul className="space-y-3">
+        {chapter.chapterContent.map((lecture, i) => (
+          <li
+            key={i}
+            className="flex items-start gap-3 bg-gray-50 hover:bg-gray-100 p-3 rounded-lg border border-gray-100 transition"
+          >
+            <img src={assets.play_icon} alt="play-icon" className="w-5 h-5 mt-1" />
+            <div className="flex-1">
+              <p className="font-medium text-gray-700">{lecture.lectureTitile}</p>
+              <div className="flex gap-3 text-sm text-gray-500">
+                {lecture.isPreviewFree && (
+                  <p className="text-green-600 font-semibold">Preview</p>
+                )}
+                <p>
+                  {humanizeDuration(lecture.lectureDuration * 60 * 1000, {
+                    units: ['h', 'm', 's']
+                  })}
+                </p>
+              </div>
+            </div>
+          </li>
+        ))}
+      </ul>
+    </div>
+  ))}
+</div>
 
-            <h2 className='text-2xl font-semibold text-gray-800 mt-8'>
-              Course Structure
-            </h2>
+          
+
 
           </div>
 
