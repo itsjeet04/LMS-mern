@@ -111,6 +111,7 @@ function CourseDetails() {
       </ul>
     </div>
   ))}
+  
 </div>
 
           
