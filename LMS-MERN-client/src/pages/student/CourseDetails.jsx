@@ -8,7 +8,9 @@ import humanizeDuration from 'humanize-duration'
 function CourseDetails() {
   const { id } = useParams();
   const { allCourses, calcCourseRating, calcNumberOfLectures, calcCourseTime, calcChapterTime } = useContext(AppContext);
+
   const [courseData, setCourseData] = useState(null);
+  const [openSections,setOpenSections] = useState({});
 
   useEffect(() => {
     // Finds the course from the context based on the URL parameter.
@@ -20,6 +22,14 @@ function CourseDetails() {
   // Display a loading spinner until the course data is available
   if (!courseData) {
     return <Loading />;
+  }
+
+  const toggleSection = (index) => {
+    setOpenSections((prev)=>(
+      {
+      ...prev,[index] : !prev[index],
+    }
+  ))
   }
 
   const ratingValue = calcCourseRating(courseData);
@@ -72,13 +82,16 @@ function CourseDetails() {
                 Sirjanjeet singh
               </span>
             </p>
+
 {/* Course Structure */}
+
 <h2 className='text-2xl font-semibold text-gray-800 mt-10 mb-4'>
   Course Structure
 </h2>
 <div className="space-y-6">
   {courseData.courseContent.map((chapter, index) => (
     <div key={index} className="bg-white rounded-xl shadow-md p-4 border border-gray-200">
+      <div onClick={()=> toggleSection(index)}></div>
       <div className="flex items-center gap-3 mb-2">
         <img src={assets.down_arrow_icon} alt="arrow" className="w-5 h-5" />
         <p className="text-lg font-medium text-gray-800">{chapter.chapterTitle}</p>
@@ -86,6 +99,7 @@ function CourseDetails() {
       <p className="text-sm text-gray-500 mb-3">
         {chapter.chapterContent.length} lectures • {calcChapterTime(chapter)}
       </p>
+      <div className={`overflow-hidden transition-all duration-300 ${openSections[index] ? 'max-h-96' : 'max-h-0' }`}  >
       <ul className="space-y-3">
         {chapter.chapterContent.map((lecture, i) => (
           <li
@@ -94,7 +108,7 @@ function CourseDetails() {
           >
             <img src={assets.play_icon} alt="play-icon" className="w-5 h-5 mt-1" />
             <div className="flex-1">
-              <p className="font-medium text-gray-700">{lecture.lectureTitile}</p>
+              <p className="font-medium text-gray-700">{lecture.lectureTitle}</p>
               <div className="flex gap-3 text-sm text-gray-500">
                 {lecture.isPreviewFree && (
                   <p className="text-green-600 font-semibold">Preview</p>
@@ -109,6 +123,7 @@ function CourseDetails() {
           </li>
         ))}
       </ul>
+      </div>
     </div>
   ))}
 
