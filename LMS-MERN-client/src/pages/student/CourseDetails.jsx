@@ -91,14 +91,29 @@ function CourseDetails() {
 <div className="space-y-6">
   {courseData.courseContent.map((chapter, index) => (
     <div key={index} className="bg-white rounded-xl shadow-md p-4 border border-gray-200">
-      <div onClick={()=> toggleSection(index)}></div>
-      <div className="flex items-center gap-3 mb-2">
-        <img src={assets.down_arrow_icon} alt="arrow" className="w-5 h-5" />
-        <p className="text-lg font-medium text-gray-800">{chapter.chapterTitle}</p>
-      </div>
-      <p className="text-sm text-gray-500 mb-3">
-        {chapter.chapterContent.length} lectures • {calcChapterTime(chapter)}
-      </p>
+      <button
+  type="button"
+  onClick={() => toggleSection(index)}
+  aria-expanded={!!openSections[index]}
+  className="w-full flex items-center gap-3 mb-2 focus:outline-none"
+>
+  <img
+    src={assets.down_arrow_icon}
+    alt={openSections[index] ? 'Collapse' : 'Expand'}
+    className={`w-5 h-5 transition-transform ${
+      openSections[index] ? 'rotate-180' : 'rotate-0'
+    }`}
+  />
+  <div className="flex-1 text-left">
+    <p className="text-lg font-medium text-gray-800">
+      {chapter.chapterTitle}
+    </p>
+    <p className="text-sm text-gray-500">
+      {chapter.chapterContent.length} lectures • {calcChapterTime(chapter)}
+    </p>
+  </div>
+</button>
+
       <div className={`overflow-hidden transition-all duration-300 ${openSections[index] ? 'max-h-96' : 'max-h-0' }`}  >
       <ul className="space-y-3">
         {chapter.chapterContent.map((lecture, i) => (
