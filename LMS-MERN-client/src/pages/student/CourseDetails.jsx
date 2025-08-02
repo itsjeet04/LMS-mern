@@ -4,6 +4,7 @@ import { AppContext } from '../../context/AppContext';
 import { assets } from '../../assets/assets';
 import Loading from '../../components/student/Loading';
 import humanizeDuration from 'humanize-duration';
+import Footer from '../../components/student/Footer';
 
 function CourseDetails() {
   const { id } = useParams();
@@ -12,6 +13,7 @@ function CourseDetails() {
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
+  const [isEnrolled , setIsEnrolled]  = useState(false)
 
   useEffect(() => {
     // Finds the course from the context based on the URL parameter.
@@ -197,7 +199,7 @@ function CourseDetails() {
             </div>
 
             <div className="p-5 space-y-1">
-              <p className="text-2xl font-bold text-green-300">
+              <p className="text-2xl font-bold text-green-600">
                 {currency}
                 {(courseData.coursePrice - courseData.discount * courseData.coursePrice / 100).toFixed(2)}
               </p>
@@ -238,13 +240,67 @@ function CourseDetails() {
     <span className="text-sm font-semibold text-gray-900">
       {calcNumberOfLectures(courseData)} lessons
     </span>
+    
   </div>
+  
 </div>
+
+     <div className='h-full px-6 py-3'>
+  <button className=" h-full w-full flex items-center justify-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500">
+    {isEnrolled ? "Already Enrolled" : "Enroll Now"}
+  </button>
 </div>
+<div>
+<div className="bg-white rounded-lg shadow-md p-6 max-w-md">
+  <p className="text-xl font-bold text-gray-800 mb-4">
+    What's in the course?
+  </p>
+  <ul className="space-y-2 list-inside">
+    <li className="flex items-start gap-2">
+      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+      <span className="text-gray-700">
+        Lifetime access to all course materials
+      </span>
+    </li>
+    <li className="flex items-start gap-2">
+      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+      <span className="text-gray-700">
+        Learn from basics to advanced, step by step
+      </span>
+    </li>
+    <li className="flex items-start gap-2">
+      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+      <span className="text-gray-700">
+        Certificate of completion
+      </span>
+    </li>
+    <li className="flex items-start gap-2">
+      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+      <span className="text-gray-700">
+        Downloadable resources & cheatsheets
+      </span>
+    </li>
+    <li className="flex items-start gap-2">
+      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+      <span className="text-gray-700">
+        24/7 support and community access
+      </span>
+    </li>
+  </ul>
 </div>
 
 
+</div>
+
+</div>
+
+
+
+</div>
+     
       </main>
+      
+      <Footer/>
     </div>
   );
 }
