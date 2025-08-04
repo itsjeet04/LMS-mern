@@ -1,6 +1,7 @@
 import React, { useContext, useState } from 'react'
 import { AppContext } from '../../context/AppContext'
-import { assets } from '../../assets/assets'
+import {Line } from "rc-progress"
+
 
 function MyEnrollments() {
 
@@ -43,9 +44,21 @@ function MyEnrollments() {
                     <td className='px-6 py-4'>
                       <div className='flex items-center gap-4'>
                         <img src={course.courseThumbnail} alt='thumbnail' className='w-28 h-16 object-cover rounded-lg' />
-                        <div className='min-w-0'>
-                           <p className='font-semibold text-gray-800 truncate'>{course.courseTitle}</p>
-                        </div>
+                        <div className="min-w-0 p-3 bg-white rounded-lg shadow flex flex-col">
+  <p className="font-semibold text-gray-800 truncate text-base">{course.courseTitle}</p>
+  <div className="mt-2">
+    <Line
+      className="rounded-full"
+      strokeWidth={2}
+      percent={
+        progressArray[index]
+          ? (progressArray[index].lectureCompleted * 100) / progressArray[index].totalLectures
+          : 0
+      }
+    />
+  </div>
+</div>
+
                       </div>
                     </td>
                     <td className='px-6 py-4 font-medium whitespace-nowrap'>{calcCourseTime(course)}</td>
