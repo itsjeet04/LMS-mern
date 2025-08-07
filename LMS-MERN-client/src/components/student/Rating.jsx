@@ -2,7 +2,10 @@ import React from 'react'
 
 function Rating() {
   return (
-    <div>Rating</div>
+    <div>
+    {Array.from({length:5} , 
+    )}
+    </div>
   )
 }
 

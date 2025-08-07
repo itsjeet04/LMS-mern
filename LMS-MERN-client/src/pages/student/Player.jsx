@@ -5,6 +5,7 @@ import { assets } from '../../assets/assets'
 import humanizeDuration from 'humanize-duration'
 import YouTube from 'react-youtube'
 import Footer from '../../components/student/Footer'
+import Rating from '../../components/student/Rating'
 
 function Player() {
 
@@ -138,6 +139,13 @@ return (
             </div>
           ))}
         </div>
+     <div className="mt-6 mb-4 p-4 bg-white rounded-lg shadow-md border border-gray-200">
+  {/* <h1 className="text-xl font-semibold text-gray-800">
+    Rate the course:
+  </h1> */}
+  <Rating/>
+</div>
+
       </div>
 
 {/* right column */}
@@ -147,7 +155,7 @@ return (
       <div className="aspect-video w-full rounded-lg overflow-hidden shadow-md border border-gray-300">
         <YouTube
           videoId={playerData.lectureUrl.split('/').pop()}
-          iframeClassName="w-full h-full"
+          iframeClassName="w-full "
         />
       </div>
       <div>
