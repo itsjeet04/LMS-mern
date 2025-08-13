@@ -94,43 +94,37 @@ return (
                           alt="play-icon"
                           className="w-5 h-5 mt-1 text-gray-500"
                         />
-                        <div className="flex-1">
-                          <p className="font-medium text-gray-700">{lecture.lectureTitle}</p>
-                          <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
-                            {lecture.lectureUrl && (
-                              <p
-                                onClick={() =>
-                                  setPlayerData({
-                                    ...lecture,
-                                    chapter: index + 1,
-                                    lecture: i + 1,
-                                  })
-                                }
-                                className="cursor-pointer text-green-600 font-semibold flex items-center gap-1 hover:underline"
-                              >
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  className="h-4 w-4"
-                                  viewBox="0 0 20 20"
-                                  fill="currentColor"
-                                >
-                                  <path
-                                    fillRule="evenodd"
-                                    d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
-                                    clipRule="evenodd"
-                                  />
-                                </svg>
-                                watch
-                              </p>
-                            )}
-                            <p>
-                              {humanizeDuration(lecture.lectureDuration * 60 * 1000, {
-                                round: true,
-                                units: ['h', 'm'],
-                              })}
-                            </p>
-                          </div>
-                        </div>
+                     <div className="flex-1">
+  {/* Lecture Title */}
+  <p className="font-medium text-gray-800">{lecture.lectureTitle}</p>
+
+  {/* Lecture Actions & Duration */}
+  <div className="flex items-center gap-4 text-sm text-gray-500 mt-1">
+    {lecture.lectureUrl && (
+      <button
+        onClick={() =>
+          setPlayerData({
+            ...lecture,
+            chapter: index + 1,
+            lecture: i + 1,
+          })
+        }
+        className="text-green-600 font-semibold hover:underline focus:outline-none focus:ring-2 focus:ring-green-500 rounded"
+      >
+        Watch
+      </button>
+    )}
+
+    {/* Duration */}
+    <span className="text-gray-600">
+      {humanizeDuration(lecture.lectureDuration * 60 * 1000, {
+        round: true,
+        units: ['h', 'm'],
+      })}
+    </span>
+  </div>
+</div>
+
                       </li>
                     ))}
                   </ul>
@@ -143,7 +137,10 @@ return (
   {/* <h1 className="text-xl font-semibold text-gray-800">
     Rate the course:
   </h1> */}
-  <Rating/>
+  <h1 className="text-xl font-semibold text-gray-800 mb-4">
+    Rate the course:
+  </h1>
+  <Rating initialRating={0}/>
 </div>
 
       </div>
