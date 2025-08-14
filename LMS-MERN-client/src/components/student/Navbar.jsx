@@ -24,15 +24,14 @@ function Navbar() {
         }`}
     >
 
-      {/* Logo */}
       <div className="flex items-center gap-2">
         
+        
         <img onClick={()=>navigate("/")} src={assets.logo} alt="Logo" className="h-10 w-auto" />
-
-        <span className="text-xl font-semibold text-gray-800">YourBrand</span>
+        
       </div>
 
-      {/* Actions */}
+
       <nav className="flex items-center gap-6">
         {user && <>
           <button onClick={()=>{navigate("/educator")}} className="px-4 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">
