@@ -2,6 +2,7 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 import Navbar from '../../components/educator/Navbar'
 import Sidebar from '../../components/educator/Sidebar'
+import Footer from '../../components/educator/Footer'
 
 function Educator() {
   return (
@@ -16,8 +17,9 @@ function Educator() {
         <div className='flex-1 border-l border-gray-300'>
         {<Outlet />}
         </div>
-      </main>
 
+      </main>
+      <Footer />
     </div>
   )
 }
