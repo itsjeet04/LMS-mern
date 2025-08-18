@@ -19,7 +19,7 @@ export const AppContextProvider = (props) => {
         setAllCourses(dummyCourses);
     };
 
-    useEffect(() => {
+    useEffect(() => { 
         fetchAllCourses();
         fetchEnrolledCourses();
     }, []);
