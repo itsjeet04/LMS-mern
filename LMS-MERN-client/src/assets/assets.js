@@ -182,34 +182,43 @@ export const dummyStudentEnrolled = [
         "courseTitle": "Introduction to JavaScript",
         "purchaseDate": "2024-12-20T08:39:55.509Z"
     },
-    {
-        "student": {
-            "_id": "user_2qQlvXyr02B4Bq6hT0Gvaa5fT9V",
-            "name": "GreatStack",
-            "imageUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ycVFsdmFMSkw3ckIxNHZMU2o4ZURWNEtmR2IifQ"
-        },
-        "courseTitle": "Introduction to JavaScript",
-        "purchaseDate": "2024-12-20T08:59:49.964Z"
+  {
+    student: {
+      _id: 'user_2qQlvXyr02B4Bq6hT0Gvaa5fT9V',
+      name: 'Priya Sharma',
+      imageUrl: 'https://images.unsplash.com/photo-1521119989659-a83eee488004?w=400',
     },
-    {
-        "student": {
-            "_id": "user_2qQlvXyr02B4Bq6hT0Gvaa5fT9V",
-            "name": "GreatStack",
-            "imageUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ycVFsdmFMSkw3ckIxNHZMU2o4ZURWNEtmR2IifQ"
-        },
-        "courseTitle": "Advanced Python Programming",
-        "purchaseDate": "2024-12-20T11:03:42.931Z"
+    courseTitle: 'Advanced React Patterns',
+    purchaseDate: '2025-08-15T10:20:00.000Z',
+  },
+  {
+    student: {
+      _id: 'user_3rRmwYzs13C5Cr7iU1Hwbb6gU8W',
+      name: 'Rohan Verma',
+      imageUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
     },
-    {
-        "student": {
-            "_id": "user_2qQlvXyr02B4Bq6hT0Gvaa5fT9V",
-            "name": "GreatStack",
-            "imageUrl": "https://img.clerk.com/eyJ0eXBlIjoicHJveHkiLCJzcmMiOiJodHRwczovL2ltYWdlcy5jbGVyay5kZXYvb2F1dGhfZ29vZ2xlL2ltZ18ycVFsdmFMSkw3ckIxNHZMU2o4ZURWNEtmR2IifQ"
-        },
-        "courseTitle": "Web Development Bootcamp",
-        "purchaseDate": "2024-12-20T11:04:48.798Z"
-    }
-]
+    courseTitle: 'Node.js and Express Masterclass',
+    purchaseDate: '2025-08-12T14:45:10.000Z',
+  },
+  {
+    student: {
+      _id: 'user_4sSnxZAt24D6Ds8jV2Ixcc7hV9X',
+      name: 'Anjali Desai',
+      imageUrl: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=400',
+    },
+    courseTitle: 'Introduction to JavaScript',
+    purchaseDate: '2025-08-10T09:05:30.000Z',
+  },
+  {
+    student: {
+      _id: 'user_5tToyABu35E7Et9kW3Jydd8iW0Y',
+      name: 'Vikram Singh',
+      imageUrl: 'https://images.unsplash.com/photo-1599566150163-29194dcaad36?w=400',
+    },
+    courseTitle: 'Advanced React Patterns',
+    purchaseDate: '2025-08-05T18:00:00.000Z',
+  },
+];
 
 export const dummyCourses = [
     {
