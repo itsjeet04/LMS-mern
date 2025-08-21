@@ -12,6 +12,7 @@ import Dashboard from './pages/educator/Dashboard.jsx';
 import MyCourse from './pages/educator/MyCourse.jsx';
 import StudentEnrolled from './pages/educator/StudentEnrolled.jsx';
 import Navbar from './components/student/Navbar.jsx';
+import "quill/dist/quill.snow.css";
 
 function App() {
 
