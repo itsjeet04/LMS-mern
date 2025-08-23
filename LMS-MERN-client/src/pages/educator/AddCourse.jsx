@@ -56,11 +56,13 @@ function AddCourse() {
         placeholder='type here'
         />
       </div>
+      
       <div>
         <p>Course Description : </p>
         <div ref={editorRef} ></div>
         {/* editorRef points to the <div> where Quill should mount. */}
       </div>
+
       <div>
         <p>Course Price</p>
         <input 
@@ -70,8 +72,9 @@ function AddCourse() {
         type='number'
         />
       </div>
+
       <div>
-        <p>Coruse Thumbnail</p>
+        <p>Course Thumbnail</p>
         <label htmlFor='thumbnailimage'>
         <img src={assets.file_upload_icon}></img>
         <input 
@@ -85,6 +88,21 @@ function AddCourse() {
         {/* preview */}
         </label>
         {image && <img src={URL.createObjectURL(image)} alt="Preview" />}
+      </div>
+
+      <div>
+        <p> Discount% </p>
+        <input
+        onChange={e => setDiscount(e.target.value)}
+        value={discount}
+        type='number'
+        placeholder='0'
+        />
+
+      </div>
+
+      <div>
+        
       </div>
 
      </form>
