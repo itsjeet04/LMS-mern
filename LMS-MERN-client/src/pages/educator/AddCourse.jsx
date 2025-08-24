@@ -1,24 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
 import uniqid from 'uniqid'
 import Quill from 'quill'
+import 'quill/dist/quill.snow.css';
 import { assets } from '../../assets/assets'
-
-
 
 function AddCourse() {
 
   const quillRef = useRef(null)
   const editorRef = useRef(null)
-  //  note : 
-  //  const editorRef = useRef(null);
-  //  This ref is attached to a DOM element in JSX:
-  //  <div ref={editorRef}></div>
-  //  After React renders, editorRef.current will point to the actual <div> element in the DOM.
-  //  That’s the container where Quill will mount itself.
-  //  (Quill is not a React component, it’s a JS library that needs a real DOM element to work on.)
-  //  useRef is persistent between renders but does not cause re-renders when updated.
-  //  const quillRef = useRef(null);
-  //  This ref is used to store the Quill instance itself.
 
   const [courseTitle, setCourseTitle] = useState('')
   const [coursePrice, setCoursePrice] = useState(0)
@@ -42,71 +31,192 @@ function AddCourse() {
     }
   }, [])
 
+  const handleChapter = (action, chapterId) => {
+    if (action === 'add') {
+      const title = prompt('Enter chapter title:');
+      if (title) {
+        const newChapter = {
+          chapterId: uniqid(),
+          chapterTitle: title,
+          chapterContent: [],
+          collapsed: false,
+          chapterOrder: chapters.length > 0 ? chapters.slice(-1)[0].chpaterOrder + 1 : 1,
+        };
+        setChapters([...chapters, newChapter]);
+      }
+    } else if (action === 'remove') {
+      setChapters(chapters.filter((chapter) => chapter.chapterId !== chapterId));
+    } else if (action === 'toggle') {
+      setChapters(chapters.map((chapter) => chapter.chapterId === chapterId ? { ...chapter, collapsed: !chapter.collapsed } : chapter));
+    };
+  };
+
   return (
+    <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen text-gray-800">
+      <form className="space-y-8 max-w-4xl mx-auto">
+        {/* Course Title */}
+        <div className="flex flex-col gap-2">
+          <p className="font-semibold text-gray-700">Course Title</p>
+          <input
+            onChange={e => setCourseTitle(e.target.value)}
+            value={courseTitle}
+            type='text'
+            placeholder='type here'
+            className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+          />
+        </div>
 
-    <div>
-     <form>
-      <div>
-        <p>Course Title</p>
-         {/* This is a controlled input field */}
-        <input 
-        onChange={e => setCourseTitle(e.target.value)}
-        value={courseTitle}
-        type='text'
-        placeholder='type here'
-        />
-      </div>
-      
-      <div>
-        <p>Course Description : </p>
-        <div ref={editorRef} ></div>
-        {/* editorRef points to the <div> where Quill should mount. */}
-      </div>
+        {/* Course Description */}
+        <div className="flex flex-col gap-2">
+          <p className="font-semibold text-gray-700">Course Description :</p>
+          <div ref={editorRef} className="bg-white rounded-md border border-gray-300 h-48"></div>
+        </div>
 
-      <div>
-        <p>Course Price</p>
-        <input 
-        onChange={e => setCoursePrice(e.target.value)}
-        value={coursePrice}
-        placeholder='0'
-        type='number'
-        />
-      </div>
+        {/* Price and Discount */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          <div className="flex flex-col gap-2">
+            <p className="font-semibold text-gray-700">Course Price</p>
+            <input
+              onChange={e => setCoursePrice(e.target.value)}
+              value={coursePrice}
+              placeholder='0'
+              type='number'
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+            />
+          </div>
+          <div className="flex flex-col gap-2">
+            <p className="font-semibold text-gray-700">Discount%</p>
+            <input
+              onChange={e => setDiscount(e.target.value)}
+              value={discount}
+              type='number'
+              placeholder='0'
+              className="w-full p-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+            />
+          </div>
+        </div>
 
-      <div>
-        <p>Course Thumbnail</p>
-        <label htmlFor='thumbnailimage'>
-        <img src={assets.file_upload_icon}></img>
-        <input 
-        type='file' 
-        id='thumbnailimage' 
-        onChange={e => (
-          setiImage(e.target.files[0])
-        )}
-        accept='image/*'
-        hidden />
-        {/* preview */}
-        </label>
-        {image && <img src={URL.createObjectURL(image)} alt="Preview" />}
-      </div>
+        {/* Course Thumbnail */}
+        <div className="flex flex-col gap-2">
+          <p className="font-semibold text-gray-700">Course Thumbnail</p>
+          <label htmlFor='thumbnailimage' className="cursor-pointer border-2 border-dashed border-gray-300 rounded-lg p-6 flex flex-col items-center justify-center hover:bg-gray-100 transition">
+            <img src={assets.file_upload_icon} className="w-12 h-12 mb-2" alt="Upload Icon" />
+            <input
+              type='file'
+              id='thumbnailimage'
+              onChange={e => (
+                setiImage(e.target.files[0])
+              )}
+              accept='image/*'
+              hidden />
+          </label>
+          {image && <img src={URL.createObjectURL(image)} alt="Preview" className="mt-4 w-48 h-auto object-cover rounded-md border border-gray-200 shadow-sm" />}
+        </div>
 
-      <div>
-        <p> Discount% </p>
-        <input
-        onChange={e => setDiscount(e.target.value)}
-        value={discount}
-        type='number'
-        placeholder='0'
-        />
+        {/* Chapters and Lectures */}
+        <div className="p-4 border border-gray-200 rounded-lg bg-white space-y-4">
+          <h2 className="text-xl font-bold text-gray-800">Course Content</h2>
+          {chapters.map((chapter, chapterIndex) => (
+            <div key={chapterIndex} className="border-t pt-4">
+              <div className="flex justify-between items-center p-3 bg-gray-100 rounded-md">
+                <div className="flex items-center font-medium">
+                  <img className={`mr-3 cursor-pointer transition-transform duration-300 ${chapter.collapsed && "rotate-90"}`} src={assets.dropdown_icon} width={14} alt="Toggle" />
+                  <span> {chapterIndex + 1} {chapter.title} </span>
+                </div>
+                <div className="flex items-center gap-4">
+                  <span className="text-sm text-gray-600">
+                    {chapter.chapterContent.length} Lectures
+                  </span>
+                  <img src={assets.cross_icon} className='cursor-pointer w-4 h-4' alt="Remove Chapter" />
+                </div>
+              </div>
+              {!chapter.collapsed && (
+                <div className="pl-8 pt-4 space-y-3">
+                  {chapter.chapterContent.map((lecture, lectureIndex) => (
+                    <div key={lectureIndex} className="flex justify-between items-center p-2 bg-gray-50 rounded">
+                      <div className="text-sm">
+                        <span className="font-medium"> {chapterIndex + 1}.{lectureIndex + 1} {lecture.lectureTitle} </span>
+                        <span className="ml-4 text-gray-500"> {lecture.lectureDuration} mins -
+                          <a href={lecture.lectureURl} target='_blank' rel="noopener noreferrer" className="text-indigo-600 hover:underline"> Link </a> -
+                          {lecture.isPreviewFree ? " Free Preview" : " Paid Lecture"}
+                        </span>
+                      </div>
+                      <img src={assets.cross_icon} className='cursor-pointer w-4 h-4' alt="Remove Lecture" />
+                    </div>
+                  ))}
+                  <div onClick={() => {
+                    setShowPopup(true)
+                    setCurrentChapterId(chapter.id)
+                  }}
+                    className="flex items-center gap-2 text-indigo-600 hover:text-indigo-800 font-medium cursor-pointer p-2 rounded-md hover:bg-indigo-50 transition-colors w-max"
+                  >
+                    <img src={assets.add_icon} className="w-5 h-5" alt="Add Icon" />
+                    <span> Add Lecture</span>
+                  </div>
+                </div>
+              )}
+            </div>
+          ))}
 
-      </div>
+          <div onClick={() => handleChapter('add')} className="mt-4 p-3 text-center border-2 border-dashed border-gray-300 rounded-lg text-gray-600 hover:bg-gray-100 cursor-pointer transition">
+            Add Chapter
+          </div>
 
-      <div>
-        
-      </div>
+          {/* Popup for adding a lecture */}
+          {showPopUp && (
+            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+              <div className="bg-white p-8 rounded-lg shadow-2xl w-full max-w-lg space-y-6 relative">
+                <h2 className="text-2xl font-bold text-gray-900">
+                  Add Lecture
+                </h2>
+                <div className="flex flex-col gap-2">
+                  <p className="font-semibold text-gray-700">Lecture Title </p>
+                  <input
+                    type='text'
+                    value={lectureDetails.lectureTitle}
+                    className='w-full p-3 border border-gray-300 rounded-md'
+                    onClick={(e) => setLectureDetails({ ...lectureDetails, lectureTitle: e.target.value }
+                    )} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <p className="font-semibold text-gray-700">Lecture Duration </p>
+                  <input
+                    type='number'
+                    value={lectureDetails.lectureDuration}
+                    className='w-full p-3 border border-gray-300 rounded-md'
+                    onClick={(e) => setLectureDetails({ ...lectureDetails, lectureDuration: e.target.value }
+                    )} />
+                </div>
+                <div className="flex flex-col gap-2">
+                  <p className="font-semibold text-gray-700">Lecture URL </p>
+                  <input
+                    type='text'
+                    value={lectureDetails.lectureUrl}
+                    className='w-full p-3 border border-gray-300 rounded-md'
+                    onClick={(e) => setLectureDetails({ ...lectureDetails, lectureUrl: e.target.value }
+                    )} />
+                </div>
+                <div className="flex items-center gap-3">
+                  <p className="font-semibold text-gray-700">Is Preview Free</p>
+                  <input
+                    type='checkbox'
+                    value={lectureDetails.isPreviewFree}
+                    className='h-4 w-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500'
+                    onClick={(e) => setLectureDetails({ ...lectureDetails, isPreviewFree: e.target.value }
+                    )} />
+                </div>
 
-     </form>
-       
+                <button className="w-full bg-indigo-600 text-white font-bold py-3 px-4 rounded-md hover:bg-indigo-700 transition-colors">ADD</button>
+
+                <img src={assets.cross_icon} alt="" onClick={(e) => setShowPopup(false)} className="absolute top-4 right-4 w-6 h-6 cursor-pointer" />
+              </div>
+            </div>
+          )}
+        </div>
+        <button type="submit" className="bg-green-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-green-700 transition-transform transform hover:scale-105 shadow-lg">
+          ADD
+        </button>
+      </form>
     </div>
   )
 }
