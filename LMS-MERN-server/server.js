@@ -7,22 +7,22 @@ import { clerkWebhooks } from './controllers/webHooks.js';
 // express init
 const app = express();
 
-// Database connection
-await connectDB();
+// Database connection 
+connectDB()
+  .then(() => console.log("MongoDB connected"))
+  .catch((err) => console.error("DB connection error:", err));
 
 // Middleware
 app.use(cors());
+app.use(express.json()); // global JSON parser
 
 // Routes
 app.get('/', (req, res) => {
-    res.send('API is running...')
-    }
-)
-app.post('/clerk' ,express.json(), clerkWebhooks )
+  res.send('API is running...');
+});
 
-// Port
-const PORT = process.env.PORT || 5000;
+app.post('/clerk', clerkWebhooks);
 
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-})
+//  No app.listen()
+// Export the app as default for Vercel
+export default app;
