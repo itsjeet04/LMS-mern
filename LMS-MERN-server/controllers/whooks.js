@@ -9,6 +9,7 @@ import bodyParser from "body-parser";
 
 //api controller function to manage clerk user with database
 export const clerkWebhooks = async (req, res) => {
+    
     try {
         const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
 
