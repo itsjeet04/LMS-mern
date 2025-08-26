@@ -8,22 +8,40 @@ const app = express();
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Parse JSON globally , linked with req.body 
-
-
-app.use(async (req, res, next) => {
-  await connectDB();
-  next();
-});
 
 // Routes
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
+// Webhook route with raw body parsing - BEFORE express.json()
 app.post('/clerk', express.raw({ type: 'application/json' }), clerkWebhooks);
-// Using express.raw to get raw body for webhook verification
 
-// No app.listen()
-// Export for Vercel
+// Parse JSON globally for other routes - AFTER webhook route
+app.use(express.json()); // Parse JSON globally , linked with req.body 
+
+// Database connection middleware
+app.use(async (req, res, next) => {
+  try {
+    await connectDB();
+    next();
+  } catch (error) {
+    console.error('Database connection error:', error);
+    res.status(500).json({ error: 'Database connection failed' });
+  }
+});
+
+// Add your other routes here
+// Example: app.use('/api/users', userRoutes);
+
+// Error handling middleware
+app.use((error, req, res, next) => {
+  console.error('Server error:', error);
+  res.status(500).json({ 
+    error: 'Internal server error',
+    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong'
+  });
+});
+
+// Export for Vercel - this is crucial for serverless
 export default app;
