@@ -4,6 +4,7 @@ import { Webhook } from "svix";
 // Webhook = event notification via HTTP.
 
 import User from "../models/user.model.js";
+import bodyParser from "body-parser";
 
 
 //api controller function to manage clerk user with database
