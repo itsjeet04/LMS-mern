@@ -4,7 +4,7 @@ import 'dotenv/config';
 import { connectDB } from './configs/mongoDB.js';
 import { clerkWebhooks } from './controllers/webhooks.js';
 
-// --- Connect to the database ONCE when the app starts ---
+// Connect to MongoDB
 connectDB();
 
 const app = express();
@@ -17,12 +17,12 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// --- Webhook route with the CORRECT raw body parsing ---
+// Webhook route with the CORRECT raw body parsing 
 // This MUST come BEFORE express.json()
 app.post(
   '/clerk',
   express.raw({
-    type: 'application/json',
+    type: 'application/json', //the request body format is JSON.
     // Add the verify function to attach the raw body
     verify: (req, res, buf) => {
       req.rawBody = buf;
@@ -34,7 +34,7 @@ app.post(
 // Parse JSON globally for all OTHER routes
 app.use(express.json());
 
-// --- The database connection middleware has been REMOVED ---
+
 
 // Add your other API routes here
 // Example: app.use('/api/users', userRoutes);

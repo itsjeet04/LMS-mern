@@ -1,6 +1,9 @@
 import { Webhook } from "svix";
 import User from "../models/user.model.js";
 
+//  Clerk actually uses Svix under the hood to send webhooks securely.
+// Your webhook is the messenger that keeps your LMS student records up-to-date with Clerk.
+
 export const clerkWebhooks = async (req, res) => {
   try {
     // Ensure you have the raw body buffer
