@@ -1,62 +1,61 @@
 import { Webhook } from "svix";
-// webhook is a middleware function that verifies the incoming events
-// A webhook is a way for one application to notify another in real time.
-// Webhook = event notification via HTTP.
-
 import User from "../models/user.model.js";
-import bodyParser from "body-parser";
 
-
-//api controller function to manage clerk user with database
 export const clerkWebhooks = async (req, res) => {
-    
-    try {
-        const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-
-         whook.verify(JSON.stringify(req.body), {
-            "svix-id": req.headers["svix-id"],
-            "svix-timestamp": req.headers["svix-timestamp"],
-            "svix-signature": req.headers["svix-signature"]
-            
-        });
-        const { type, data } = req.body;
-
-        switch (type) {
-            case "user.created": {
-                const userData = {
-                    _id: data.id,
-                    email: data.email_addresses[0].email_address,
-                    name: data.first_name + " " + data.last_name,
-                    imageUrl: data.image_url
-                }
-                await User.create(userData)
-                res.json({ message: "User created successfully" });
-                break;
-            }
-
-            case "user.deleted": {
-                await User.findByIdAndDelete(data.id);
-                res.json({ message: "User deleted successfully" })
-                break;
-            }
-
-            case "user.updated": {
-                const userData = {
-                    email: data.email_addresses[0].email_address,
-                    name: data.first_name + " " + data.last_name,
-                    imageUrl: data.image_url
-                }
-                await User.findByIdAndUpdate(data.id, userData)
-                res.json({ message: "User updated successfully" })
-                break;
-            }
-
-            default:
-                break;
-        }
-
-    } catch (error) {
-        console.error("Error processing webhook:", error);
-        res.status(400).json({ message: "Error processing webhook" });
+  try {
+    // Ensure you have the raw body buffer
+    if (!req.rawBody) {
+      throw new Error("Raw body not available. Make sure to use the raw body parser middleware.");
     }
-}
+
+    const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
+    
+    // Verify the raw body from the request
+    const payload = whook.verify(req.rawBody, {
+      "svix-id": req.headers["svix-id"],
+      "svix-timestamp": req.headers["svix-timestamp"],
+      "svix-signature": req.headers["svix-signature"],
+    });
+
+    // `payload` is now the verified and parsed JavaScript object
+    const { type, data } = payload;
+
+    switch (type) {
+      case "user.created": {
+        const userData = {
+          _id: data.id,
+          email: data.email_addresses[0].email_address,
+          name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
+          imageUrl: data.image_url,
+        };
+        await User.create(userData);
+        console.log("User created in DB:", userData._id);
+        break; // Added break
+      }
+      case "user.deleted": {
+        // Clerk might send an event for a user that doesn't exist in your DB yet.
+        // The `data.id` is the user's Clerk ID.
+        await User.findByIdAndDelete(data.id);
+        console.log("User deleted from DB:", data.id);
+        break; // Added break
+      }
+      case "user.updated": {
+        const userData = {
+          email: data.email_addresses[0].email_address,
+          name: `${data.first_name || ''} ${data.last_name || ''}`.trim(),
+          imageUrl: data.image_url,
+        };
+        await User.findByIdAndUpdate(data.id, userData);
+        console.log("User updated in DB:", data.id);
+        break; // Added break
+      }
+    }
+
+    // Always respond with a 200 OK to Clerk
+    res.status(200).json({ message: "Webhook processed successfully" });
+
+  } catch (error) {
+    console.error("Error processing webhook:", error.message);
+    res.status(400).json({ message: "Error processing webhook" });
+  }
+};
