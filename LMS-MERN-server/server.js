@@ -3,6 +3,9 @@ import cors from 'cors';
 import 'dotenv/config';
 import { connectDB } from './configs/mongoDB.js';
 import { clerkWebhooks } from './controllers/webhooks.js';
+import educatorRouter from './routes/educatorRoutes.js';
+import { clerkMiddleware } from '@clerk/express';
+
 
 // Connect to MongoDB
 connectDB();
@@ -11,6 +14,10 @@ const app = express();
 
 // Middleware
 app.use(cors());
+app.use(clerkMiddleware())
+// Verifies the Clerk session / JWT on each request.
+// If valid, it attaches user information (like req.auth.userId, req.auth.sessionId, etc.) to the request.
+
 
 // Routes
 app.get('/', (req, res) => {
@@ -30,6 +37,7 @@ app.post(
   }),
   clerkWebhooks
 );
+app.use('/api/educator',express.json(),  educatorRouter);
 
 // Parse JSON globally for all OTHER routes
 app.use(express.json());
