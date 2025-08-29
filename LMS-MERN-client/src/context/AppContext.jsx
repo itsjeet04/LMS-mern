@@ -37,6 +37,7 @@ useEffect(() => {
   };
   fetchToken();
 }, [user]);
+//in your backend (Express), clerkMiddleware() will verify that token → extract user info → give you req.auth.
 
 
     const navigate = useNavigate();

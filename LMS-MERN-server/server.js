@@ -5,10 +5,13 @@ import { connectDB } from './configs/mongoDB.js';
 import { clerkWebhooks } from './controllers/webhooks.js';
 import educatorRouter from './routes/educatorRoutes.js';
 import { clerkMiddleware } from '@clerk/express';
+import connectCloudinary from './configs/cloudinary.js';
 
 
 // Connect to MongoDB
-connectDB();
+await connectDB();
+connectCloudinary();
+
 
 const app = express();
 
