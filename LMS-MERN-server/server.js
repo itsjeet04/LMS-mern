@@ -7,58 +7,52 @@ import educatorRouter from './routes/educatorRoutes.js';
 import { clerkMiddleware } from '@clerk/express';
 import connectCloudinary from './configs/cloudinary.js';
 
-
 // Connect to MongoDB
 await connectDB();
 connectCloudinary();
-
 
 const app = express();
 
 // Middleware
 app.use(cors());
-app.use(clerkMiddleware())
-// Verifies the Clerk session / JWT on each request.
-// If valid, it attaches user information (like req.auth.userId, req.auth.sessionId, etc.) to the request.
+app.use(clerkMiddleware()); // Clerk attaches req.auth if valid Authorization header is present
 
+// --- Clerk Webhook route (must come BEFORE express.json()) ---
+app.post(
+  '/clerk',
+  express.raw({
+    type: 'application/json', // raw body for svix verification
+    verify: (req, res, buf) => {
+      req.rawBody = buf; // save raw body for webhook verification
+    },
+  }),
+  clerkWebhooks
+);
+
+// --- Now parse JSON globally for all OTHER routes ---
+app.use(express.json());
 
 // Routes
 app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Webhook route with the CORRECT raw body parsing 
-// This MUST come BEFORE express.json()
-app.post(
-  '/clerk',
-  express.raw({
-    type: 'application/json', //the request body format is JSON.
-    // Add the verify function to attach the raw body
-    verify: (req, res, buf) => {
-      req.rawBody = buf;
-    },
-  }),
-  clerkWebhooks
-);
-app.use('/api/educator',express.json(),  educatorRouter);
-
-// Parse JSON globally for all OTHER routes
-app.use(express.json());
-
-
-
-// Add your other API routes here
-// Example: app.use('/api/users', userRoutes);
+// Educator routes (protected with Clerk auth)
+app.use('/api/educator', educatorRouter);
 
 // Error handling middleware (keep this at the end)
 app.use((error, req, res, next) => {
   console.error('Server error:', error);
   res.status(500).json({
     error: 'Internal server error',
-    message: process.env.NODE_ENV === 'development' ? error.message : 'Something went wrong',
+    message:
+      process.env.NODE_ENV === 'development'
+        ? error.message
+        : 'Something went wrong',
   });
 });
 
+// Start server
 app.listen(5000, () => {
   console.log('Server is running on port 5000');
 });
