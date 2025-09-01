@@ -1,7 +1,7 @@
 // total earning , enrolled students , no. of courses 
 
-import Course from "../models/course.model.js"
-import { Purchase } from "../models/purchase.js"
+import Course from "../../models/course.model.js"
+import { Purchase } from "../../models/purchase.js"
 
 export const getEducatorDashboard = async (req, res) => {
 

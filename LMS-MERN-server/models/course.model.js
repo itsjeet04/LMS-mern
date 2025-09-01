@@ -71,6 +71,10 @@ const courseSchema = new mongoose.Schema(
             min: 0,
         },
         courseContent: [chapterScheme],
+        enrolledStudents : [{
+            type : String,
+            ref : "User"
+        }] ,
         courseRatings: [
             {
                 userId: {
@@ -90,6 +94,7 @@ const courseSchema = new mongoose.Schema(
             ref: "User",
             required: true
         }
+         
     }, { timestamps: true, minimize: false }
     // minimize : false -> to save empty objects in the database 
     // by default mongoose removes empty objects

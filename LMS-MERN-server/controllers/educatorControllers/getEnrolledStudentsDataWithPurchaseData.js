@@ -1,5 +1,5 @@
-import Course from "../models/course.model.js";
-import { Purchase } from "../models/purchase.js";
+import Course from "../../models/course.model.js";
+import { Purchase } from "../../models/purchase.js";
 
 const getEnrolledStudentsDataWithPurchaseData = async (req, res) => {
     try {
@@ -31,5 +31,4 @@ const getEnrolledStudentsDataWithPurchaseData = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
-
-module.exports = { getEnrolledStudentsDataWithPurchaseData };
+export default getEnrolledStudentsDataWithPurchaseData

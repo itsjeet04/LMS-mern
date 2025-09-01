@@ -6,6 +6,7 @@ import { clerkWebhooks } from './controllers/webhooks.js';
 import educatorRouter from './routes/educatorRoutes.js';
 import { clerkMiddleware } from '@clerk/express';
 import connectCloudinary from './configs/cloudinary.js';
+import courseRouter from './routes/courseRoutes.js';
 
 // Connect to MongoDB
 await connectDB();
@@ -39,6 +40,8 @@ app.get('/', (req, res) => {
 
 // Educator routes (protected with Clerk auth)
 app.use('/api/educator', educatorRouter);
+//course routes
+app.use('/api/course' , express.json() , courseRouter)
 
 // Error handling middleware (keep this at the end)
 app.use((error, req, res, next) => {

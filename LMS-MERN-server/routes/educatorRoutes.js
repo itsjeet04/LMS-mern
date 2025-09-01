@@ -1,10 +1,11 @@
 import express from 'express';
-import { updateRoleToEducator } from '../controllers/becomeEducator.js';
+import { updateRoleToEducator } from '../controllers/educatorControllers/becomeEducator.js';
 import { upload } from '../middlewares/multer.middleware.js';
 import { protectEducator } from '../middlewares/auth.middleware.js';
-import { addNewCourse } from '../controllers/addNewCourse.js';
-import { getEducatorCourses } from '../controllers/getEducatorCourses.js';
-import { getEducatorDashboard } from '../controllers/getEducatorDashboard.js'; 
+import { addNewCourse } from '../controllers/educatorControllers/addNewCourse.js';
+import { getEducatorCourses } from '../controllers/educatorControllers/getEducatorCourses.js';
+import { getEducatorDashboard } from '../controllers/educatorControllers/getEducatorDashboard.js'; 
+import getEnrolledStudentsDataWithPurchaseData from '../controllers/educatorControllers/getEnrolledStudentsDataWithPurchaseData.js';
 
 
 
@@ -16,6 +17,7 @@ educatorRouter.post('/update-role', updateRoleToEducator);
 educatorRouter.get('/add-course', upload.single('thumbnail') , protectEducator , addNewCourse );
 educatorRouter.get('/courses', protectEducator , getEducatorCourses );
 educatorRouter.get('/educator-dashboard', protectEducator , getEducatorDashboard );
+educatorRouter.get('/educator-students', protectEducator , getEnrolledStudentsDataWithPurchaseData );
 
 
 export default educatorRouter;

@@ -1,5 +1,5 @@
 import Express from "express";
-import Course from "../models/course.model.js";
+import Course from "../../models/course.model.js";
 import mongoose from "mongoose";
 import { v2 as cloudinary } from "cloudinary";
 
