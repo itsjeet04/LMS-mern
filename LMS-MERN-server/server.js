@@ -7,6 +7,7 @@ import educatorRouter from './routes/educatorRoutes.js';
 import { clerkMiddleware } from '@clerk/express';
 import connectCloudinary from './configs/cloudinary.js';
 import courseRouter from './routes/courseRoutes.js';
+import { userRouter } from './routes/userRoutes.js';
 
 // Connect to MongoDB
 await connectDB();
@@ -42,6 +43,8 @@ app.get('/', (req, res) => {
 app.use('/api/educator', educatorRouter);
 //course routes
 app.use('/api/course' , express.json() , courseRouter)
+//user routes
+app.use('/api/user' , express.json() , userRouter)
 
 // Error handling middleware (keep this at the end)
 app.use((error, req, res, next) => {
