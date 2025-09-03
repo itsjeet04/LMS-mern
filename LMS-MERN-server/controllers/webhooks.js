@@ -1,5 +1,6 @@
 import { Webhook } from "svix";
 import User from "../models/user.model.js";
+import Stripe from "stripe";
 
 //  Clerk actually uses Svix under the hood to send webhooks securely.
 // Your webhook is the messenger that keeps your LMS student records up-to-date with Clerk.
@@ -62,3 +63,8 @@ export const clerkWebhooks = async (req, res) => {
     res.status(400).json({ message: "Error processing webhook" });
   }
 };
+
+const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
+export const stripeWebhooks = async(req,res) => {
+   
+}

@@ -1,3 +1,5 @@
+// protectEducator
+
 import { clerkClient } from "@clerk/express";
 
 export const protectEducator = async (req, res, next) => {

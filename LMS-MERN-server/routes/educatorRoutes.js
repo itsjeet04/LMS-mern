@@ -1,7 +1,7 @@
 import express from 'express';
 import { updateRoleToEducator } from '../controllers/educatorControllers/becomeEducator.js';
 import { upload } from '../middlewares/multer.middleware.js';
-import { protectEducator } from '../middlewares/auth.middleware.js';
+import { protectEducator } from '../middlewares/authProtectEducator.middleware.js';
 import { addNewCourse } from '../controllers/educatorControllers/addNewCourse.js';
 import { getEducatorCourses } from '../controllers/educatorControllers/getEducatorCourses.js';
 import { getEducatorDashboard } from '../controllers/educatorControllers/getEducatorDashboard.js'; 
