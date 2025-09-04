@@ -1,6 +1,8 @@
 import { Webhook } from "svix";
 import User from "../models/user.model.js";
 import Stripe from "stripe";
+import { Purchase } from "../models/purchase.js";
+import Course from "../models/course.model.js";
 
 //  Clerk actually uses Svix under the hood to send webhooks securely.
 // Your webhook is the messenger that keeps your LMS student records up-to-date with Clerk.
@@ -13,7 +15,7 @@ export const clerkWebhooks = async (req, res) => {
     }
 
     const whook = new Webhook(process.env.CLERK_WEBHOOK_SECRET);
-    
+
     // Verify the raw body from the request
     const payload = whook.verify(req.rawBody, {
       "svix-id": req.headers["svix-id"],
@@ -65,6 +67,74 @@ export const clerkWebhooks = async (req, res) => {
 };
 
 const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY)
-export const stripeWebhooks = async(req,res) => {
-   
+export const stripeWebhooks = async (req, res) => {
+  const sig = req.headers["stripe-signature"];
+
+  let event;
+  try {
+    event = Stripe.webhooks.constructEvent(
+      req.body,
+      sig,
+      process.env.STRIPE_WEBHOOK_SECRET
+    );
+  } catch (err) {
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  try {
+    switch (event.type) {
+      case "payment_intent.success": {
+        const paymentIntent = event.data.object;
+        const paymentIntentId = paymentIntent.id;
+
+        const session = await stripeInstance.checkout.sessions.list({
+          payment_intent: paymentIntentId
+        })
+
+        const { purchaseId } = session.data[0].metadata
+
+        const purchaseData = await Purchase.findById(purchaseId)
+        const userData = await User.findById(purchaseId.userId)
+        const courseData = await Course.findById(purchaseId.courseId.toString())
+
+        courseData.enrolledStudents.push(userData)
+        await courseData.save() //saved in mongo
+
+        userData.enrolledCourses.push(courseData._id)
+        await userData.save()
+
+        purchaseData.status = 'success'
+        await purchaseData.save()
+
+        break;
+      }
+
+      case "payment_intent.payment_failed": {
+        const paymentIntent = event.data.object;
+        const paymentIntentId = paymentIntent.id;
+
+        const session = await stripeInstance.checkout.sessions.list({
+          payment_intent: paymentIntentId
+        })
+
+        const { purchaseId } = session.data[0].metadata
+
+        const purchaseData = await Purchase.findById(purchaseId)
+
+        purchaseData.status = 'failed'
+        await purchaseData.save()
+
+        break;
+      }
+
+      default: {
+        console.log(` Unhandled event type: ${event.type}`);
+      }
+    }
+
+    res.json({ received: true });
+  } catch (err) {
+    console.error(" Error handling webhook:", err.message);
+    res.status(500).json({ error: "Webhook handler failed" });
+  }
 }
