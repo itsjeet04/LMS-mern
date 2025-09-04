@@ -47,7 +47,7 @@ app.use('/api/course' , express.json() , courseRouter)
 app.use('/api/user' , express.json() , userRouter)
 // stripe 
 //it’s Stripe’s servers calling your backend.
-app.post('/stripe', express.raw({type : 'application/json'}) , stripeWebhooks)
+app.post('/stripe', express.raw({ type: "application/json" }) , stripeWebhooks)
 
 
 // Error handling middleware (keep this at the end)
