@@ -46,6 +46,7 @@ app.use('/api/course' , express.json() , courseRouter)
 //user routes
 app.use('/api/user' , express.json() , userRouter)
 // stripe 
+//it’s Stripe’s servers calling your backend.
 app.post('/stripe', express.raw({type : 'application/json'}) , stripeWebhooks)
 
 

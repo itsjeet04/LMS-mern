@@ -51,7 +51,8 @@ export const purchaseCourse = async (req, res) => {
         quantity: 1,
       },
     ];
-
+    
+    // Creates a Stripe Checkout session, attaching purchaseId in metadata.
     const paymentSession = await stripeInstance.checkout.sessions.create({
       success_url: `${origin}/loading/my-enrollments`,
       cancel_url: `${origin}/`,
@@ -61,6 +62,8 @@ export const purchaseCourse = async (req, res) => {
         purchaseId: newPurchase._id.toString(),
       },
     });
+
+    // If successful, Stripe triggers an event → but your server won’t know yet until the webhook fires.
 
     res.json({ success: true, session_url: paymentSession.url });
   } catch (error) {

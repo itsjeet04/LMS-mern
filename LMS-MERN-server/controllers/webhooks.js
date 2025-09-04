@@ -83,31 +83,31 @@ export const stripeWebhooks = async (req, res) => {
 
   try {
     switch (event.type) {
-      case "payment_intent.success": {
-        const paymentIntent = event.data.object;
-        const paymentIntentId = paymentIntent.id;
+      case "payment_intent.succeeded": {
+  const paymentIntent = event.data.object;
+  const paymentIntentId = paymentIntent.id;
 
-        const session = await stripeInstance.checkout.sessions.list({
-          payment_intent: paymentIntentId
-        })
+  const session = await stripeInstance.checkout.sessions.list({
+    payment_intent: paymentIntentId
+  });
 
-        const { purchaseId } = session.data[0].metadata
+  const { purchaseId } = session.data[0].metadata;
 
-        const purchaseData = await Purchase.findById(purchaseId)
-        const userData = await User.findById(purchaseId.userId)
-        const courseData = await Course.findById(purchaseId.courseId.toString())
+  const purchaseData = await Purchase.findById(purchaseId);
+  const userData = await User.findById(purchaseData.userId);
+  const courseData = await Course.findById(purchaseData.courseId);
 
-        courseData.enrolledStudents.push(userData)
-        await courseData.save() //saved in mongo
+  courseData.enrolledStudents.push(userData._id);
+  await courseData.save();
 
-        userData.enrolledCourses.push(courseData._id)
-        await userData.save()
+  userData.enrolledCourses.push(courseData._id);
+  await userData.save();
 
-        purchaseData.status = 'success'
-        await purchaseData.save()
+  purchaseData.status = "success";
+  await purchaseData.save();
+  break;
+}
 
-        break;
-      }
 
       case "payment_intent.payment_failed": {
         const paymentIntent = event.data.object;
