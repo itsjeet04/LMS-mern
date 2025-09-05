@@ -12,6 +12,8 @@ export const purchaseCourse = async (req, res) => {
 
     // fetch user from DB using Clerk userId
     const userData = await User.findById( userId); 
+    console.log(userData);
+    
 
     
     const courseData = await Course.findById(courseId);
@@ -62,6 +64,8 @@ export const purchaseCourse = async (req, res) => {
         purchaseId: newPurchase._id.toString(),
       },
     });
+    console.log("Stripe session metadata:", paymentSession.metadata);
+
 
     // If successful, Stripe triggers an event → but your server won’t know yet until the webhook fires.
 
