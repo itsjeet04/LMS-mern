@@ -5,41 +5,60 @@ import Stripe from "stripe";
 
 export const purchaseCourse = async (req, res) => {
   try {
-    
     const { courseId } = req.body;
-    const userId = req.auth.userId; // Clerk userId
+    const { origin } = req.headers;
+    const userId = req.auth.userId;
 
     const userData = await User.findById(userId);
-    if (!userData) return res.json({ success: false, message: "userData not found" });
-
     const courseData = await Course.findById(courseId);
-    if (!courseData) return res.json({ success: false, message: "courseData not found" });
 
-    // calculate discounted price
+    if (!userData) {
+      return res.json({ success: false, message: "userData not found" });
+    }
+    if (!courseData) {
+      return res.json({ success: false, message: "courseData not found" });
+    }
+
     const discountedPrice =
       courseData.coursePrice - (courseData.discount * courseData.coursePrice) / 100;
 
-    const newPurchase = await Purchase.create({
+    const purchaseData = {
       courseId: courseData._id,
       userId: userData._id,
       amount: Number(discountedPrice.toFixed(2)),
-      status: "pending",
-    });
+    };
 
-    // Stripe Gateway (PaymentIntent)
+    const newPurchase = await Purchase.create(purchaseData);
+
     const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
     const currency = process.env.CURRENCY.toLowerCase();
 
-    const paymentIntent = await stripeInstance.paymentIntents.create({
-      amount: Math.round(newPurchase.amount * 100), // in cents
-      currency,
-      metadata: {
-        purchaseId: newPurchase._id.toString(),
+    const line_items = [
+      {
+        price_data: {
+          currency,
+          product_data: {
+            name: courseData.courseTitle,
+          },
+          unit_amount: Math.round(newPurchase.amount * 100),
+        },
+        quantity: 1,
+      },
+    ];
+
+    const paymentSession = await stripeInstance.checkout.sessions.create({
+      success_url: `${origin}/loading/my-enrollments`,
+      cancel_url: `${origin}/`,
+      line_items,
+      mode: "payment",
+      payment_intent_data: {
+        metadata: {
+          purchaseId: newPurchase._id.toString(),
+        },
       },
     });
 
-    // Send client_secret to frontend
-    res.json({ success: true, clientSecret: paymentIntent.client_secret });
+    res.json({ success: true, session_url: paymentSession.url });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }
