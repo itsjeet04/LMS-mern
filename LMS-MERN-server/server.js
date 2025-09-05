@@ -19,19 +19,26 @@ const app = express();
 app.use(cors());
 app.use(clerkMiddleware()); // Clerk attaches req.auth if valid Authorization header is present
 
-// --- Clerk Webhook route (must come BEFORE express.json()) ---
+// --- Clerk Webhook (raw body) ---
 app.post(
   '/clerk',
   express.raw({
-    type: 'application/json', // raw body for svix verification
+    type: 'application/json',
     verify: (req, res, buf) => {
-      req.rawBody = buf; // save raw body for webhook verification
+      req.rawBody = buf; // save raw body for Clerk verification
     },
   }),
   clerkWebhooks
 );
 
-// --- Now parse JSON globally for all OTHER routes ---
+// --- Stripe Webhook (raw body) ---
+app.post(
+  '/stripe',
+  express.raw({ type: 'application/json' }),
+  stripeWebhooks
+);
+
+// --- Now parse JSON globally for ALL other routes ---
 app.use(express.json());
 
 // Routes
@@ -39,18 +46,11 @@ app.get('/', (req, res) => {
   res.send('API is running...');
 });
 
-// Educator routes (protected with Clerk auth)
 app.use('/api/educator', educatorRouter);
-//course routes
-app.use('/api/course' , express.json() , courseRouter)
-//user routes
-app.use('/api/user' , express.json() , userRouter)
-// stripe 
-//it’s Stripe’s servers calling your backend.
-app.post('/stripe', express.raw({ type: "application/json" }) , stripeWebhooks)
+app.use('/api/course', courseRouter);
+app.use('/api/user', userRouter);
 
-
-// Error handling middleware (keep this at the end)
+// Error handling middleware
 app.use((error, req, res, next) => {
   console.error('Server error:', error);
   res.status(500).json({
