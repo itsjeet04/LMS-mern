@@ -64,13 +64,17 @@ export const clerkWebhooks = async (req, res) => {
     console.error("Error processing webhook:", error.message);
     res.status(400).json({ message: "Error processing webhook" });
   }
-};export const stripeWebhooks = async (req, res) => {
+};
+
+const stripeInstance = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+export const stripeWebhooks = async (req, res) => {
   const sig = req.headers["stripe-signature"];
 
   let event;
   try {
     event = Stripe.webhooks.constructEvent(
-      req.body, // raw buffer here
+      req.body, // raw buffer (make sure express.raw() is used in server.js)
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
     );
@@ -83,24 +87,14 @@ export const clerkWebhooks = async (req, res) => {
     console.log("✅ Stripe event received:", event.type);
 
     switch (event.type) {
-      case "payment_intent.succeeded": {
-        const paymentIntent = event.data.object;
-        console.log("💰 PaymentIntent:", paymentIntent.id);
+      case "checkout.session.completed": {
+        const session = event.data.object;
+        const purchaseId = session.metadata?.purchaseId;
 
-        const session = await stripeInstance.checkout.sessions.list({
-          payment_intent: paymentIntent.id,
-        });
-
-        if (!session.data.length) {
-          console.error("⚠️ No checkout.session found for this PaymentIntent");
-          break;
-        }
-
-        const { purchaseId } = session.data[0].metadata || {};
-        console.log("🛒 purchaseId:", purchaseId);
+        console.log("🛒 purchaseId from metadata:", purchaseId);
 
         if (!purchaseId) {
-          console.error("❌ Missing purchaseId in metadata");
+          console.error("❌ Missing purchaseId in session metadata");
           return res.status(400).send("purchaseId missing");
         }
 
@@ -122,6 +116,7 @@ export const clerkWebhooks = async (req, res) => {
           break;
         }
 
+        // Enroll user
         courseData.enrolledStudents.push(userData._id);
         await courseData.save();
 
@@ -135,26 +130,13 @@ export const clerkWebhooks = async (req, res) => {
         break;
       }
 
-      case "payment_intent.payment_failed": {
-        const paymentIntent = event.data.object;
-        console.log("❌ Payment failed:", paymentIntent.id);
+      case "checkout.session.expired": {
+        const session = event.data.object;
+        const purchaseId = session.metadata?.purchaseId;
 
-        const session = await stripeInstance.checkout.sessions.list({
-          payment_intent: paymentIntent.id,
-        });
-
-        if (!session.data.length) {
-          console.error("⚠️ No checkout.session found for failed PaymentIntent");
-          break;
-        }
-
-        const { purchaseId } = session.data[0].metadata || {};
-        const purchaseData = await Purchase.findById(purchaseId);
-
-        if (purchaseData) {
-          purchaseData.status = "failed";
-          await purchaseData.save();
-          console.log("✅ Purchase marked as failed:", purchaseId);
+        if (purchaseId) {
+          await Purchase.findByIdAndUpdate(purchaseId, { status: "failed" });
+          console.log("❌ Purchase expired:", purchaseId);
         }
         break;
       }
