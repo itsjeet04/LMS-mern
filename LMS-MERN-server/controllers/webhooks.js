@@ -73,7 +73,7 @@ export const stripeWebhooks = async (req, res) => {
 
   let event;
   try {
-    event = Stripe.webhooks.constructEvent(
+    event = stripeInstance.webhooks.constructEvent(
       req.body, // raw buffer (make sure express.raw() is used in server.js)
       sig,
       process.env.STRIPE_WEBHOOK_SECRET
