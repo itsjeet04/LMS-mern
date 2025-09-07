@@ -23,7 +23,7 @@ function CourseCard({ course }) {
           {course.courseTitle}
         </h3>
         <p className="text-sm text-gray-500 mb-2">
-          {course.educator.name}
+          {course.educator?.name}
         </p>
         <div className="flex items-center justify-between mb-2">
           <p className="text-sm text-yellow-600 font-medium">
