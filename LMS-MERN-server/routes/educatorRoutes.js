@@ -13,7 +13,7 @@ import getEnrolledStudentsDataWithPurchaseData from '../controllers/educatorCont
 const educatorRouter = express.Router();
 
 // add educator role to user 
-educatorRouter.post('/update-role', updateRoleToEducator);
+educatorRouter.get('/update-role', updateRoleToEducator);
 educatorRouter.get('/add-course', upload.single('thumbnail') , protectEducator , addNewCourse );
 educatorRouter.get('/courses', protectEducator , getEducatorCourses );
 educatorRouter.get('/educator-dashboard', protectEducator , getEducatorDashboard );
