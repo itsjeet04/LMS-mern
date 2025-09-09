@@ -6,29 +6,74 @@ import Loading from '../../components/student/Loading';
 import humanizeDuration from 'humanize-duration';
 import Footer from '../../components/student/Footer';
 import YouTube from 'react-youtube'
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function CourseDetails() {
   const { id } = useParams();
-  const { allCourses, calcCourseRating, calcNumberOfLectures, calcCourseTime, calcChapterTime, currency } = useContext(AppContext);
+  const { allCourses, calcCourseRating, calcNumberOfLectures, calcCourseTime, calcChapterTime, currency, backendUrl, userData , getToken} = useContext(AppContext);
 
   const [courseData, setCourseData] = useState(null);
   const [openSections, setOpenSections] = useState({});
   const [isDescriptionExpanded, setIsDescriptionExpanded] = useState(false);
-  const [isEnrolled , setIsEnrolled]  = useState(false)
-  const [playerData,setPlayerData] = useState(null)
+  const [isEnrolled, setIsEnrolled] = useState(false)
+  const [playerData, setPlayerData] = useState(null)
+
+  const fetchCourseData = async () => {
+    try {
+      const { data } = await axios.get(backendUrl + 'api/course/' + id);
+
+      if (data.success) {
+        setCourseData(data.course)
+      } else {
+        toast.error(data.message)
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
+  }
+
+  console.log(`userData: ${userData?.name}`);
+  
+  
+
+    const enrollCourse = async() => {
+      try {
+        if(!userData){
+          return toast.error("Please login to enroll the course");
+        }
+        if(isEnrolled){
+          return toast.warn("You are already enrolled in this course");
+        }
+        const token = await  getToken();
+
+        const { data } = await axios.post(backendUrl + 'api/user/purchase' , {
+          courseId : courseData._id, 
+        },{
+          headers : {Authorization : `Bearer ${token}`}
+        }) 
+        if(data.success){
+          const {session_Url} = data 
+          window.location.replace(session_Url) 
+        }else {
+          toast.error(data.message)
+        }
+
+      } catch (error) {
+        toast.error(error.message)
+      }
+    }
 
   useEffect(() => {
-    // Finds the course from the context based on the URL parameter.
-    const course = allCourses.find(c => c._id === id);
-    // If course is found, set it to state.
-    if (course) {
-      setCourseData(course);
-      // Pre-open the first chapter by default
-      setOpenSections({ 0: true });
-    }
-  }, [id, allCourses]); // Re-run effect if id or course list changes
+    fetchCourseData();
+  }, [id]);
 
-  // Display a loading spinner until the course data is available
+  useEffect(() => {
+    if (courseData && userData) {
+      setIsEnrolled(userData.enrolledCourses.includes(courseData._id));
+    }
+  },[courseData,userData])
+
   if (!courseData) {
     return <Loading />;
   }
@@ -45,20 +90,13 @@ function CourseDetails() {
 
   return (
     <div className="relative min-h-screen bg-gray-50">
-      {/* Background Gradient */}
       <div className="absolute top-0 left-0 w-full h-[50vh] bg-gradient-to-b from-cyan-100/60 to-gray-50 -z-0" />
-
-      {/* Main Content Wrapper */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 md:py-28">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-12 items-start">
-
-          {/* --- Left Column: Course Information --- */}
           <div className="lg:col-span-2 space-y-6">
             <h1 className="text-4xl md:text-5xl font-bold text-gray-800 tracking-tight">
               {courseData.courseTitle}
             </h1>
-
-            {/* Short Description with "Read More" functionality */}
             <div className="prose prose-lg text-gray-600 max-w-none">
               <div
                 dangerouslySetInnerHTML={{
@@ -74,9 +112,6 @@ function CourseDetails() {
                 {isDescriptionExpanded ? 'Read less' : 'Read more'}
               </button>
             </div>
-
-
-            {/* Ratings and Reviews Section */}
             <div className="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2">
               <p className="text-lg font-bold text-orange-500">{ratingValue.toFixed(1)}</p>
               <div className="flex items-center">
@@ -99,11 +134,9 @@ function CourseDetails() {
             <p className="text-gray-700">
               Created by:
               <span className='font-semibold text-blue-600 ml-2'>
-                Sirjanjeet Singh
+                {courseData.educator.name}
               </span>
             </p>
-
-            {/* --- Course Structure Accordion --- */}
             <div className="pt-8">
               <h2 className='text-3xl font-bold text-gray-800 mb-6'>
                 Course Content
@@ -145,9 +178,9 @@ function CourseDetails() {
                                 <p className="font-medium text-gray-700">{lecture.lectureTitle}</p>
                                 <div className="flex items-center gap-3 text-sm text-gray-500 mt-1">
                                   {lecture.isPreviewFree && (
-                                    <p  onClick={()=>setPlayerData({
-                                      videoId : lecture.lectureUrl.split('/').pop()
-                                    })}  className="text-green-600 font-semibold flex items-center gap-1">
+                                    <p onClick={() => setPlayerData({
+                                      videoId: lecture.lectureUrl.split('/').pop()
+                                    })} className="text-green-600 font-semibold flex items-center gap-1">
                                       <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor"><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd" /></svg>
                                       Preview
                                     </p>
@@ -182,17 +215,16 @@ function CourseDetails() {
 
           </div>
 
-          {/* --- Right Column: Purchase Card --- */}
           <div className="bg-white shadow-lg rounded-lg overflow-hidden max-w-sm">
             {
-              playerData ?      
-              <YouTube videoId={playerData.videoId} opts={{playerVars : {autoplay : 1}}} iframeClassName='w-full'/>
-              : 
-            <img
-              src={courseData.courseThumbnail}
-              alt="course"
-              className="w-full h-48 object-cover"
-            />
+              playerData ?
+                <YouTube videoId={playerData.videoId} opts={{ playerVars: { autoplay: 1 } }} iframeClassName='w-full' />
+                :
+                <img
+                  src={courseData.courseThumbnail}
+                  alt="course"
+                  className="w-full h-48 object-cover"
+                />
             }
             <div className="p-5 flex items-center gap-2 bg-gray-50">
               <img
@@ -220,95 +252,95 @@ function CourseDetails() {
               </p>
             </div>
 
-<div className="flex items-center gap-4 flex-wrap">
-  {/* Rating */}
-  <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1 shadow-sm">
-    <img src={assets.star} alt="star" className="w-4 h-4" />
-    <span className="text-sm font-semibold text-gray-900">
-      {calcCourseRating(courseData)}
-    </span>
-    <span className="text-xs text-gray-500">average</span>
-  </div>
+            <div className="flex items-center gap-4 flex-wrap">
+              {/* Rating */}
+              <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1 shadow-sm">
+                <img src={assets.star} alt="star" className="w-4 h-4" />
+                <span className="text-sm font-semibold text-gray-900">
+                  {calcCourseRating(courseData)}
+                </span>
+                <span className="text-xs text-gray-500">average</span>
+              </div>
 
-  <div className="h-4 w-px bg-gray-500/40" />
+              <div className="h-4 w-px bg-gray-500/40" />
 
-  {/* Time */}
-  <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1 shadow-sm">
-    <img src={assets.time_clock_icon} alt="clock" className="w-4 h-4" />
-    <span className="text-sm font-semibold text-gray-900">
-      {calcCourseTime(courseData)}
-    </span>
-  </div>
+              {/* Time */}
+              <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1 shadow-sm">
+                <img src={assets.time_clock_icon} alt="clock" className="w-4 h-4" />
+                <span className="text-sm font-semibold text-gray-900">
+                  {calcCourseTime(courseData)}
+                </span>
+              </div>
 
-  <div className="h-4 w-px bg-gray-500/40" />
+              <div className="h-4 w-px bg-gray-500/40" />
 
-  {/* Lessons */}
-  <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1 shadow-sm">
-    <img src={assets.lesson_icon} alt="lesson" className="w-4 h-4" />
-    <span className="text-sm font-semibold text-gray-900">
-      {calcNumberOfLectures(courseData)} lessons
-    </span>
-    
-  </div>
-  
-</div>
+              {/* Lessons */}
+              <div className="inline-flex items-center gap-2 bg-white border border-gray-200 rounded-full px-3 py-1 shadow-sm">
+                <img src={assets.lesson_icon} alt="lesson" className="w-4 h-4" />
+                <span className="text-sm font-semibold text-gray-900">
+                  {calcNumberOfLectures(courseData)} lessons
+                </span>
 
-     <div className='h-full px-6 py-3'>
-  <button className=" h-full w-full flex items-center justify-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500">
-    {isEnrolled ? "Already Enrolled" : "Enroll Now"}
-  </button>
-</div>
-<div>
-<div className="bg-white rounded-lg shadow-md p-6 max-w-md">
-  <p className="text-xl font-bold text-gray-800 mb-4">
-    What's in the course?
-  </p>
-  <ul className="space-y-2 list-inside">
-    <li className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
-      <span className="text-gray-700">
-        Lifetime access to all course materials
-      </span>
-    </li>
-    <li className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
-      <span className="text-gray-700">
-        Learn from basics to advanced, step by step
-      </span>
-    </li>
-    <li className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
-      <span className="text-gray-700">
-        Certificate of completion
-      </span>
-    </li>
-    <li className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
-      <span className="text-gray-700">
-        Downloadable resources & cheatsheets
-      </span>
-    </li>
-    <li className="flex items-start gap-2">
-      <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
-      <span className="text-gray-700">
-        24/7 support and community access
-      </span>
-    </li>
-  </ul>
-</div>
+              </div>
 
+            </div>
 
-</div>
-
-</div>
+            <div className='h-full px-6 py-3'>
+              <button onClick={enrollCourse} className=" h-full w-full flex items-center justify-center px-6 py-3 bg-green-600 text-white font-semibold rounded-lg shadow hover:bg-green-700 transition duration-150 focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-indigo-500">
+                {isEnrolled ? "Already Enrolled" : "Enroll Now"}
+              </button>
+            </div>
+            <div>
+              <div className="bg-white rounded-lg shadow-md p-6 max-w-md">
+                <p className="text-xl font-bold text-gray-800 mb-4">
+                  What's in the course?
+                </p>
+                <ul className="space-y-2 list-inside">
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+                    <span className="text-gray-700">
+                      Lifetime access to all course materials
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+                    <span className="text-gray-700">
+                      Learn from basics to advanced, step by step
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+                    <span className="text-gray-700">
+                      Certificate of completion
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+                    <span className="text-gray-700">
+                      Downloadable resources & cheatsheets
+                    </span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <span className="flex-shrink-0 mt-1 text-green-600">✔</span>
+                    <span className="text-gray-700">
+                      24/7 support and community access
+                    </span>
+                  </li>
+                </ul>
+              </div>
 
 
+            </div>
 
-</div>
-     
+          </div>
+
+
+
+        </div>
+
       </main>
-      
-      <Footer/>
+
+      <Footer />
     </div>
   );
 }

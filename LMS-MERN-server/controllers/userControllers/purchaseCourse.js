@@ -58,7 +58,7 @@ export const purchaseCourse = async (req, res) => {
       },
     });
 
-    res.json({ success: true, session_url: paymentSession.url });
+    res.json({ success: true, session_Url: paymentSession.url });
   } catch (error) {
     res.json({ success: false, message: error.message });
   }

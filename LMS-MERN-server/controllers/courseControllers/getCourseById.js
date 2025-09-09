@@ -16,6 +16,10 @@ export const getCourseById = async(req,res) => {
                 }
             })
         });
+          res.json({
+      success: true,
+      course: courseData,
+    });
 
     } catch (error) {
         console.error(error)
