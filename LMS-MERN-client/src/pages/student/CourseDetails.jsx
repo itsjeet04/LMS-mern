@@ -32,8 +32,6 @@ function CourseDetails() {
       toast.error(error.message)
     }
   }
-
-  console.log(`userData: ${userData?.name}`);
   
   
 
