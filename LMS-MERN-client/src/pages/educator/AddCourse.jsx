@@ -1,10 +1,15 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useContext, useEffect, useRef, useState } from 'react'
 import uniqid from 'uniqid'
 import Quill from 'quill'
 import 'quill/dist/quill.snow.css';
 import { assets } from '../../assets/assets'
+import { AppContext } from '../../context/AppContext';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function AddCourse() {
+
+  const {backendUrl , getToken } = useContext(AppContext)
 
   const quillRef = useRef(null)
   const editorRef = useRef(null)
@@ -12,7 +17,7 @@ function AddCourse() {
   const [courseTitle, setCourseTitle] = useState('')
   const [coursePrice, setCoursePrice] = useState(0)
   const [discount, setDiscount] = useState(0)
-  const [image, setiImage] = useState(null)
+  const [image, setImage] = useState(null)
   const [chapters, setChapters] = useState([])
   const [showPopUp, setShowPopup] = useState(false)
   const [currentChapterid, setCurrentChapterId] = useState(null)
@@ -40,7 +45,6 @@ function AddCourse() {
           chapterTitle: title,
           chapterContent: [],
           collapsed: false,
-          // FIX: Corrected typo from `chpaterOrder` to `chapterOrder`
           chapterOrder: chapters.length > 0 ? chapters.slice(-1)[0].chapterOrder + 1 : 1,
         };
         setChapters([...chapters, newChapter]);
@@ -106,9 +110,57 @@ function AddCourse() {
       setCurrentChapterId(null); // Good practice to clear the current ID
     }
   }
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
+  try {
     e.preventDefault();
+
+    if (!courseTitle || !coursePrice || !image || chapters.length === 0) {
+      toast.error("Please fill all required fields.");
+      return; // stop further execution
+    }
+
+    const courseData = {
+      courseTitle,
+      courseDescription: quillRef.current.root.innerHTML,
+      coursePrice: Number(coursePrice),
+      discount: Number(discount),
+      courseContent: chapters,
+    };
+
+    const formData = new FormData();
+    formData.append('courseData', JSON.stringify(courseData));
+    formData.append('thumbnail', image);
+
+    const token = await getToken();
+    const { data } = await axios.post(
+      backendUrl + 'api/educator/add-course',
+      formData,
+      {
+        headers: { 
+          Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+
+    if (data?.success) {
+      toast.success(data.message);
+      setCourseTitle('');
+      setCoursePrice(0);
+      setDiscount(0);
+      setImage(null); 
+      setChapters([]);
+      quillRef.current.root.innerHTML = '';
+    } else {
+      toast.error(data.message);
+    }
+
+  } catch (error) {
+    console.error(error);
+    toast.error(error.message);
   }
+};
+
 
   return (
     <div className="p-4 sm:p-6 md:p-8 bg-gray-50 min-h-screen text-gray-800">
@@ -164,7 +216,7 @@ function AddCourse() {
               type='file'
               id='thumbnailimage'
               onChange={e => (
-                setiImage(e.target.files[0])
+                setImage(e.target.files[0])
               )}
               accept='image/*'
               hidden />

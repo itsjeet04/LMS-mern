@@ -1,20 +1,37 @@
 import React, { useContext, useState, useEffect } from 'react';
 import { AppContext } from '../../context/AppContext';
 import Loading from '../../components/student/Loading';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 
 function MyCourse() {
-  const { currency, allCourses } = useContext(AppContext);
+  const { currency ,backendUrl , isEducator , getToken} = useContext(AppContext);
 
   const [courses, setCourses] = useState();
 
   const fetchEducatorCourses = async () => {
-    // In a real app, you might filter courses for the logged-in educator
-    setCourses(allCourses || []); // Set to empty array to prevent map error if allCourses is null/undefined
+    try {
+      const token = await getToken();
+      const {data} = await axios.get(backendUrl + 'api/educator/courses', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (data?.success) {
+        setCourses(data.courses);
+      }else {
+        toast.error(data?.message || "Failed to fetch courses");
+      }
+    } catch (error) {
+      toast.error(error.message)
+    }
   };
 
   useEffect(() => {
+    if (isEducator) {
     fetchEducatorCourses();
-  }, [allCourses]); // Dependency added for correctness
+    }
+  }, [isEducator]); 
 
   return courses ? (
     <div className="p-4 sm:p-6 lg:p-8 bg-gray-50 min-h-screen">

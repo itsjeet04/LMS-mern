@@ -2,6 +2,7 @@
 
 import Course from "../../models/course.model.js"
 import { Purchase } from "../../models/purchase.js"
+import User from "../../models/user.model.js"
 
 export const getEducatorDashboard = async (req, res) => {
 

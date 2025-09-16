@@ -2,20 +2,36 @@ import React, { useContext, useEffect, useState } from 'react';
 import { AppContext } from '../../context/AppContext';
 import { assets, dummyDashboardData } from '../../assets/assets';
 import Loading from '../../components/student/Loading';
+import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function Dashboard() {
   const [dashboardData, setDashboardData] = useState(null);
-  const { currency } = useContext(AppContext);
+  const { currency  , isEducator , backendUrl , getToken} = useContext(AppContext);
 
   const fetchDashboardData = async () => {
-    setTimeout(() => {
-      setDashboardData(dummyDashboardData);
-    }, 500);
+      try {
+        const token =  await getToken();
+        const {data} = await axios.get(backendUrl + 'api/educator/educator-dashboard', {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        if (data?.success) {
+          setDashboardData(data.dashboardData);
+        }else{
+          toast.error(data?.message);
+        }
+      } catch (error) {
+        toast.error(error.message)
+      }
   };
 
   useEffect(() => {
+    if (isEducator){
     fetchDashboardData();
-  }, []);
+    }
+  }, [isEducator]);
 
   return dashboardData ? (
     <div className="bg-gray-50 min-h-screen p-4 sm:p-6 lg:p-8">
