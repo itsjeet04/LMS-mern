@@ -9,6 +9,9 @@
     "lint": "eslint .",
     "preview": "vite preview"
   },
+  "engines": {
+  "node": "18.x"
+  },
   "dependencies": {
     "@clerk/clerk-react": "^5.33.0",
     "@tailwindcss/vite": "^4.1.11",
