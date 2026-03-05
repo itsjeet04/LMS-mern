@@ -1,6 +1,7 @@
 import React from 'react';
 import { assets } from "../../assets/assets";
 import { ArrowRight } from 'lucide-react'; 
+import { Link } from 'react-router-dom';
 
 function Hero() {
   return (
@@ -20,21 +21,22 @@ function Hero() {
               Join thousands of learners on their journey to success. Our platform offers flexible, expert-led courses designed to help you achieve your goals.
             </p>
 
-            <div className="mt-8 flex justify-center lg:justify-start gap-4">
-              <a 
-                href="course-list" 
-                className="inline-flex items-center justify-center px-6 py-3 font-semibold text-white bg-blue-500 rounded-lg shadow-md hover:bg-blue-700 transition-transform transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2"
-              >
-                Explore Courses
-                <ArrowRight className="ml-2 h-5 w-5" />
-              </a>
-              <a 
-                href="#learn-more" 
-                className="inline-flex items-center justify-center px-6 py-3 font-semibold text-blue-500 bg-purple-100 rounded-lg hover:bg-purple-200 transition-colors"
-              >
-                Learn More
-              </a>
-            </div>
+            <div className="mt-8 flex flex-wrap justify-center lg:justify-start gap-4">
+  <Link 
+    to="/course-list" 
+    className="inline-flex items-center justify-center px-6 py-3 font-semibold text-white bg-blue-600 rounded-lg shadow-md hover:bg-blue-700 transition-all transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+  >
+    Explore Courses
+    <ArrowRight className="ml-2 h-5 w-5" />
+  </Link>
+  
+  <a 
+    href="#learn-more" 
+    className="inline-flex items-center justify-center px-6 py-3 font-semibold text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+  >
+    Learn More
+  </a>
+</div>
           </div>
 
           <div className="lg:w-1/2 flex justify-center lg:justify-end">
